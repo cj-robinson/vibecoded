@@ -129,6 +129,27 @@ export default function Home() {
     localStorage.removeItem('dbe-bets-user');
   };
 
+  const handleAddMoney = async () => {
+    if (!user) return;
+    setLoading(true);
+    try {
+      const res = await fetch('/api/users', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, amount: 100 }),
+      });
+      if (res.ok) {
+        const updatedUser = await res.json();
+        setUser(updatedUser);
+        localStorage.setItem('dbe-bets-user', JSON.stringify(updatedUser));
+        fetchUsers();
+      }
+    } catch (error) {
+      console.error('Failed to add money:', error);
+    }
+    setLoading(false);
+  };
+
   const handleCreateMarket = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !newMarket.title || !newMarket.description || !newMarket.endsAt) return;
@@ -302,6 +323,7 @@ export default function Home() {
           <div className="user-info">
             <span className="username">{user.name}</span>
             <span className="balance">{user.balance.toFixed(0)}</span>
+            <button className="add-money-btn" onClick={handleAddMoney} disabled={loading}>+$100</button>
             <button className="logout-btn" onClick={handleLogout}>Logout</button>
           </div>
         </div>

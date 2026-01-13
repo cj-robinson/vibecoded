@@ -84,6 +84,17 @@ export async function deleteUser(id: string): Promise<boolean> {
   return true;
 }
 
+export async function addBalance(userId: string, amount: number): Promise<User | { error: string }> {
+  const userData = await redis.get(`users:${userId}`);
+  if (!userData) return { error: 'User not found' };
+  
+  const user: User = typeof userData === 'string' ? JSON.parse(userData) as User : userData as User;
+  user.balance += amount;
+  await redis.set(`users:${userId}`, JSON.stringify(user));
+  
+  return user;
+}
+
 export async function getMarkets(): Promise<Market[]> {
   try {
     await ensureDefaultMarket();

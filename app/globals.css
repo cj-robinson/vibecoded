@@ -651,6 +651,27 @@ input, textarea {
   background: var(--green);
 }
 
+.add-money-btn {
+  background: var(--green);
+  color: white;
+  border: none;
+  font-size: 0.8rem;
+  font-weight: 600;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.add-money-btn:hover {
+  opacity: 0.9;
+}
+
+.add-money-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .logout-btn {
   background: none;
   border: none;

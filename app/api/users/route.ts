@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createUser, getUser, deleteUser, getAllUsers } from '@/lib/db';
+import { createUser, getUser, deleteUser, getAllUsers, addBalance } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const name = request.nextUrl.searchParams.get('name');
@@ -40,4 +40,20 @@ export async function DELETE(request: NextRequest) {
   }
 
   return NextResponse.json({ success: true });
+}
+
+export async function PUT(request: NextRequest) {
+  const { userId, amount } = await request.json();
+
+  if (!userId || typeof amount !== 'number') {
+    return NextResponse.json({ error: 'User ID and amount are required' }, { status: 400 });
+  }
+
+  const result = await addBalance(userId, amount);
+  
+  if ('error' in result) {
+    return NextResponse.json({ error: result.error }, { status: 400 });
+  }
+
+  return NextResponse.json(result);
 }
