@@ -1,9 +1,13 @@
 import { Redis } from '@upstash/redis';
 import { User, Market, Bet } from './types';
 
+if (!process.env.KV_REST_API_URL || !process.env.KV_REST_API_TOKEN) {
+  throw new Error('Missing Redis environment variables: KV_REST_API_URL and KV_REST_API_TOKEN must be set');
+}
+
 const redis = new Redis({
-  url: process.env.KV_REST_API_URL!,
-  token: process.env.KV_REST_API_TOKEN!,
+  url: process.env.KV_REST_API_URL,
+  token: process.env.KV_REST_API_TOKEN,
 });
 
 // Initialize default market if needed

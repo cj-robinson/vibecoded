@@ -39,12 +39,14 @@ export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState('');
   const [markets, setMarkets] = useState<Market[]>([]);
+  const [users, setUsers] = useState<User[]>([]);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [betAmounts, setBetAmounts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
   const [expandedMarket, setExpandedMarket] = useState<string | null>(null);
   const [marketBets, setMarketBets] = useState<Record<string, BetWithUser[]>>({});
   const [resolveModal, setResolveModal] = useState<{ marketId: string; outcome: boolean } | null>(null);
+  const [activeTab, setActiveTab] = useState<'markets' | 'leaderboard'>('markets');
 
   // New market form
   const [newMarket, setNewMarket] = useState({
@@ -59,6 +61,7 @@ export default function Home() {
       setUser(JSON.parse(savedUser));
     }
     fetchMarkets();
+    fetchUsers();
   }, []);
 
   const fetchMarkets = async () => {
@@ -68,6 +71,16 @@ export default function Home() {
       setMarkets(data);
     } catch (error) {
       console.error('Failed to fetch markets:', error);
+    }
+  };
+
+  const fetchUsers = async () => {
+    try {
+      const res = await fetch('/api/users');
+      const data = await res.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Failed to fetch users:', error);
     }
   };
 
@@ -225,7 +238,7 @@ export default function Home() {
 
       if (res.ok) {
         setResolveModal(null);
-        await fetchMarkets();
+        await Promise.all([fetchMarkets(), fetchUsers(), refreshUser()]);
       } else {
         const error = await res.json();
         alert(error.error || 'Failed to resolve market');
@@ -289,14 +302,31 @@ export default function Home() {
       </header>
 
       <main className="container markets-page">
-        <div className="page-header">
-          <h1 className="page-title">Markets</h1>
-          <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
-            + New Market
+        <div className="tabs">
+          <button
+            className={`tab ${activeTab === 'markets' ? 'active' : ''}`}
+            onClick={() => setActiveTab('markets')}
+          >
+            Markets
+          </button>
+          <button
+            className={`tab ${activeTab === 'leaderboard' ? 'active' : ''}`}
+            onClick={() => setActiveTab('leaderboard')}
+          >
+            Leaderboard
           </button>
         </div>
 
-        {markets.length === 0 ? (
+        {activeTab === 'markets' && (
+          <>
+            <div className="page-header">
+              <h1 className="page-title">Markets</h1>
+              <button className="btn btn-primary" onClick={() => setShowCreateModal(true)}>
+                + New Market
+              </button>
+            </div>
+
+            {markets.length === 0 ? (
           <div className="empty-state">
             <h3>No markets yet</h3>
             <p>Create the first one!</p>
@@ -418,6 +448,43 @@ export default function Home() {
               </div>
             );
           })
+        )}
+          </>
+        )}
+
+        {activeTab === 'leaderboard' && (
+          <>
+            <div className="page-header">
+              <h1 className="page-title">Leaderboard</h1>
+            </div>
+
+            {users.length === 0 ? (
+              <div className="empty-state">
+                <h3>No users yet</h3>
+                <p>Be the first to join!</p>
+              </div>
+            ) : (
+              <div className="leaderboard">
+                {users
+                  .sort((a, b) => b.balance - a.balance)
+                  .map((u, index) => (
+                    <div key={u.id} className={`leaderboard-item ${u.id === user?.id ? 'current-user' : ''}`}>
+                      <div className="rank">
+                        {index === 0 && '🥇'}
+                        {index === 1 && '🥈'}
+                        {index === 2 && '🥉'}
+                        {index > 2 && `#${index + 1}`}
+                      </div>
+                      <div className="leaderboard-user">
+                        <span className="user-name">{u.name}</span>
+                        {u.id === user?.id && <span className="you-badge">You</span>}
+                      </div>
+                      <div className="leaderboard-balance">${u.balance.toFixed(0)}</div>
+                    </div>
+                  ))}
+              </div>
+            )}
+          </>
         )}
       </main>
 
