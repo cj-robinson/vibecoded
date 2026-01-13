@@ -23,8 +23,8 @@ async function ensureDefaultMarket(): Promise<void> {
       endsAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
       resolved: false,
       outcome: null,
-      yesPool: 50,
-      noPool: 50,
+      yesPool: 5,
+      noPool: 5,
     };
     await redis.set(`markets:${defaultMarket.id}`, JSON.stringify(defaultMarket));
     await redis.sadd('markets:all', defaultMarket.id);
@@ -120,8 +120,8 @@ export async function createMarket(market: Omit<Market, 'id' | 'createdAt' | 're
     createdAt: new Date().toISOString(),
     resolved: false,
     outcome: null,
-    yesPool: 50,
-    noPool: 50,
+    yesPool: 5,
+    noPool: 5,
   };
 
   await redis.set(`markets:${newMarket.id}`, JSON.stringify(newMarket));
