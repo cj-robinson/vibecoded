@@ -32,13 +32,14 @@ async function ensureDefaultMarket(): Promise<void> {
 }
 
 export async function getAllUsers(): Promise<User[]> {
-  const userIds = await redis.smembers<string[]>('users:all');
+  const userIds = await redis.smembers('users:all');
   if (!userIds || userIds.length === 0) return [];
 
   const users = await Promise.all(
     userIds.map(async (id) => {
-      const data = await redis.get<string>(`users:${id}`);
-      return data ? JSON.parse(data) : null;
+      const data = await redis.get(`users:${id}`);
+      if (!data) return null;
+      return typeof data === 'string' ? JSON.parse(data) : data;
     })
   );
 
@@ -46,10 +47,11 @@ export async function getAllUsers(): Promise<User[]> {
 }
 
 export async function getUser(name: string): Promise<User | undefined> {
-  const userId = await redis.get<string>(`users:byName:${name.toLowerCase()}`);
+  const userId = await redis.get(`users:byName:${name.toLowerCase()}`);
   if (!userId) return undefined;
-  const userData = await redis.get<string>(`users:${userId}`);
-  return userData ? JSON.parse(userData) : undefined;
+  const userData = await redis.get(`users:${userId}`);
+  if (!userData) return undefined;
+  return typeof userData === 'string' ? JSON.parse(userData) : userData;
 }
 
 export async function createUser(name: string): Promise<User> {
@@ -71,10 +73,10 @@ export async function createUser(name: string): Promise<User> {
 }
 
 export async function deleteUser(id: string): Promise<boolean> {
-  const userData = await redis.get<string>(`users:${id}`);
+  const userData = await redis.get(`users:${id}`);
   if (!userData) return false;
 
-  const user: User = JSON.parse(userData);
+  const user: User = typeof userData === 'string' ? JSON.parse(userData) : userData;
   await redis.del(`users:${id}`);
   await redis.del(`users:byName:${user.name.toLowerCase()}`);
   await redis.srem('users:all', id);
@@ -83,23 +85,32 @@ export async function deleteUser(id: string): Promise<boolean> {
 }
 
 export async function getMarkets(): Promise<Market[]> {
-  await ensureDefaultMarket();
-  const marketIds = await redis.smembers<string[]>('markets:all');
-  if (!marketIds || marketIds.length === 0) return [];
+  try {
+    await ensureDefaultMarket();
+    const marketIds = await redis.smembers('markets:all');
 
-  const markets = await Promise.all(
-    marketIds.map(async (id) => {
-      const data = await redis.get<string>(`markets:${id}`);
-      return data ? JSON.parse(data) : null;
-    })
-  );
+    if (!marketIds || marketIds.length === 0) return [];
 
-  return markets.filter((m): m is Market => m !== null);
+    const markets = await Promise.all(
+      marketIds.map(async (id) => {
+        const data = await redis.get(`markets:${id}`);
+        if (!data) return null;
+        // Data is already parsed by Upstash Redis client
+        return typeof data === 'string' ? JSON.parse(data) : data;
+      })
+    );
+
+    return markets.filter((m): m is Market => m !== null);
+  } catch (error) {
+    console.error('getMarkets error:', error);
+    throw error;
+  }
 }
 
 export async function getMarket(id: string): Promise<Market | undefined> {
-  const data = await redis.get<string>(`markets:${id}`);
-  return data ? JSON.parse(data) : undefined;
+  const data = await redis.get(`markets:${id}`);
+  if (!data) return undefined;
+  return typeof data === 'string' ? JSON.parse(data) : data;
 }
 
 export async function createMarket(market: Omit<Market, 'id' | 'createdAt' | 'resolved' | 'outcome' | 'yesPool' | 'noPool'>): Promise<Market> {
@@ -120,13 +131,13 @@ export async function createMarket(market: Omit<Market, 'id' | 'createdAt' | 're
 }
 
 export async function placeBet(userId: string, marketId: string, amount: number, position: 'yes' | 'no'): Promise<{ bet: Bet; user: User; market: Market } | { error: string }> {
-  const userData = await redis.get<string>(`users:${userId}`);
+  const userData = await redis.get(`users:${userId}`);
   if (!userData) return { error: 'User not found' };
-  const user: User = JSON.parse(userData);
+  const user: User = typeof userData === 'string' ? JSON.parse(userData) : userData;
 
-  const marketData = await redis.get<string>(`markets:${marketId}`);
+  const marketData = await redis.get(`markets:${marketId}`);
   if (!marketData) return { error: 'Market not found' };
-  const market: Market = JSON.parse(marketData);
+  const market: Market = typeof marketData === 'string' ? JSON.parse(marketData) : marketData;
 
   if (market.resolved) return { error: 'Market is already resolved' };
   if (amount <= 0) return { error: 'Amount must be positive' };
@@ -164,9 +175,9 @@ export async function placeBet(userId: string, marketId: string, amount: number,
 }
 
 export async function resolveMarket(marketId: string, outcome: boolean): Promise<Market | { error: string }> {
-  const marketData = await redis.get<string>(`markets:${marketId}`);
+  const marketData = await redis.get(`markets:${marketId}`);
   if (!marketData) return { error: 'Market not found' };
-  const market: Market = JSON.parse(marketData);
+  const market: Market = typeof marketData === 'string' ? JSON.parse(marketData) : marketData;
 
   if (market.resolved) return { error: 'Market already resolved' };
 
@@ -178,12 +189,13 @@ export async function resolveMarket(marketId: string, outcome: boolean): Promise
   const winningPool = outcome ? market.yesPool : market.noPool;
 
   // Get all bets for this market
-  const betIds = await redis.smembers<string[]>(`bets:market:${marketId}`);
+  const betIds = await redis.smembers(`bets:market:${marketId}`);
   if (betIds && betIds.length > 0) {
     const bets = await Promise.all(
       betIds.map(async (id) => {
-        const data = await redis.get<string>(`bets:${id}`);
-        return data ? JSON.parse(data) : null;
+        const data = await redis.get(`bets:${id}`);
+        if (!data) return null;
+        return typeof data === 'string' ? JSON.parse(data) : data;
       })
     );
 
@@ -191,9 +203,9 @@ export async function resolveMarket(marketId: string, outcome: boolean): Promise
 
     // Update winners' balances
     for (const bet of winningBets) {
-      const userData = await redis.get<string>(`users:${bet.userId}`);
+      const userData = await redis.get(`users:${bet.userId}`);
       if (userData) {
-        const user: User = JSON.parse(userData);
+        const user: User = typeof userData === 'string' ? JSON.parse(userData) : userData;
         const share = bet.amount / winningPool;
         user.balance += share * totalPool;
         await redis.set(`users:${bet.userId}`, JSON.stringify(user));
@@ -206,13 +218,14 @@ export async function resolveMarket(marketId: string, outcome: boolean): Promise
 }
 
 export async function getUserBets(userId: string): Promise<Bet[]> {
-  const betIds = await redis.smembers<string[]>(`bets:user:${userId}`);
+  const betIds = await redis.smembers(`bets:user:${userId}`);
   if (!betIds || betIds.length === 0) return [];
 
   const bets = await Promise.all(
     betIds.map(async (id) => {
-      const data = await redis.get<string>(`bets:${id}`);
-      return data ? JSON.parse(data) : null;
+      const data = await redis.get(`bets:${id}`);
+      if (!data) return null;
+      return typeof data === 'string' ? JSON.parse(data) : data;
     })
   );
 
@@ -220,13 +233,14 @@ export async function getUserBets(userId: string): Promise<Bet[]> {
 }
 
 export async function getMarketBets(marketId: string): Promise<Bet[]> {
-  const betIds = await redis.smembers<string[]>(`bets:market:${marketId}`);
+  const betIds = await redis.smembers(`bets:market:${marketId}`);
   if (!betIds || betIds.length === 0) return [];
 
   const bets = await Promise.all(
     betIds.map(async (id) => {
-      const data = await redis.get<string>(`bets:${id}`);
-      return data ? JSON.parse(data) : null;
+      const data = await redis.get(`bets:${id}`);
+      if (!data) return null;
+      return typeof data === 'string' ? JSON.parse(data) : data;
     })
   );
 

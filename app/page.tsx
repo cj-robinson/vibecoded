@@ -56,7 +56,7 @@ export default function Home() {
   });
 
   useEffect(() => {
-    const savedUser = localStorage.getItem('friendbets-user');
+    const savedUser = localStorage.getItem('dbe-bets-user');
     if (savedUser) {
       setUser(JSON.parse(savedUser));
     }
@@ -91,7 +91,7 @@ export default function Home() {
       if (res.ok) {
         const updatedUser = await res.json();
         setUser(updatedUser);
-        localStorage.setItem('friendbets-user', JSON.stringify(updatedUser));
+        localStorage.setItem('dbe-bets-user', JSON.stringify(updatedUser));
       }
     } catch (error) {
       console.error('Failed to refresh user:', error);
@@ -111,7 +111,7 @@ export default function Home() {
       });
       const newUser = await res.json();
       setUser(newUser);
-      localStorage.setItem('friendbets-user', JSON.stringify(newUser));
+      localStorage.setItem('dbe-bets-user', JSON.stringify(newUser));
     } catch (error) {
       console.error('Login failed:', error);
     }
@@ -120,7 +120,7 @@ export default function Home() {
 
   const handleLogout = () => {
     setUser(null);
-    localStorage.removeItem('friendbets-user');
+    localStorage.removeItem('dbe-bets-user');
   };
 
   const handleCreateMarket = async (e: React.FormEvent) => {
@@ -253,8 +253,8 @@ export default function Home() {
     return (
       <div className="login-container">
         <div className="login-box">
-          <h1 className="login-title">Friend<span>Bets</span></h1>
-          <p className="login-subtitle">Bet on life events with your friends</p>
+          <h1 className="login-title">DBE Bets</h1>
+          <p className="login-subtitle">Prediction markets for friends</p>
 
           <form onSubmit={handleLogin}>
             <div className="input-group">
@@ -292,7 +292,7 @@ export default function Home() {
     <>
       <header className="header">
         <div className="container header-content">
-          <div className="logo">Friend<span>Bets</span></div>
+          <div className="logo">DBE Bets</div>
           <div className="user-info">
             <span className="username">{user.name}</span>
             <span className="balance">{user.balance.toFixed(0)}</span>

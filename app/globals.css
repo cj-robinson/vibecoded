@@ -1,21 +1,18 @@
 :root {
-  --bg-primary: #faf8f5;
-  --bg-secondary: #fff;
-  --bg-accent: #f0ebe3;
-  --text-primary: #2d2d2d;
-  --text-secondary: #666;
-  --text-muted: #999;
-  --border: #e5e0d8;
-  --accent-green: #4ade80;
-  --accent-green-dark: #22c55e;
-  --accent-red: #f87171;
-  --accent-red-dark: #ef4444;
-  --accent-blue: #60a5fa;
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
-  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
-  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.08);
-  --radius: 12px;
-  --radius-sm: 8px;
+  --bg-primary: #f5f5f5;
+  --bg-secondary: #ffffff;
+  --bg-accent: #e8e8e8;
+  --text-primary: #1a1a1a;
+  --text-secondary: #666666;
+  --text-muted: #999999;
+  --border: #d0d0d0;
+  --green: #10b981;
+  --red: #ef4444;
+  --blue: #3b82f6;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+  --shadow-md: 0 1px 3px rgba(0,0,0,0.06);
+  --radius: 6px;
+  --radius-sm: 4px;
 }
 
 * {
@@ -68,13 +65,10 @@ input, textarea {
 }
 
 .logo {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: -0.5px;
-}
-
-.logo span {
-  color: var(--accent-green-dark);
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  color: var(--text-primary);
 }
 
 .user-info {
@@ -85,14 +79,16 @@ input, textarea {
 
 .balance {
   background: var(--bg-accent);
-  padding: 8px 14px;
+  padding: 6px 12px;
   border-radius: var(--radius-sm);
-  font-weight: 600;
+  font-weight: 500;
   font-size: 0.9rem;
+  color: var(--text-primary);
 }
 
 .balance::before {
   content: '$';
+  margin-right: 2px;
 }
 
 .username {
@@ -120,22 +116,22 @@ input, textarea {
 }
 
 .btn-yes {
-  background: var(--accent-green);
+  background: var(--green);
   color: #166534;
 }
 
 .btn-yes:hover {
-  background: var(--accent-green-dark);
+  background: var(--green);
   color: white;
 }
 
 .btn-no {
-  background: var(--accent-red);
+  background: var(--red);
   color: #991b1b;
 }
 
 .btn-no:hover {
-  background: var(--accent-red-dark);
+  background: var(--red);
   color: white;
 }
 
@@ -394,12 +390,12 @@ input, textarea {
 }
 
 .odds-yes {
-  background: var(--accent-green);
+  background: var(--green);
   color: #166534;
 }
 
 .odds-no {
-  background: var(--accent-red);
+  background: var(--red);
   color: #991b1b;
 }
 
@@ -630,7 +626,7 @@ input, textarea {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--accent-green);
+  background: var(--green);
 }
 
 .logout-btn {
