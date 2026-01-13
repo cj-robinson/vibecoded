@@ -28,9 +28,3 @@ export interface Bet {
   position: 'yes' | 'no';
   createdAt: string;
 }
-
-export interface Database {
-  users: User[];
-  markets: Market[];
-  bets: Bet[];
-}

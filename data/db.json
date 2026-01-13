@@ -1,0 +1,52 @@
+{
+  "users": [
+    {
+      "id": "b0a64052-13d8-47ff-9b68-6a4e50189919",
+      "name": "TestUser",
+      "balance": 100,
+      "createdAt": "2026-01-13T03:25:27.102Z"
+    },
+    {
+      "id": "de6b3932-b843-4d3e-8edc-a35370e9c959",
+      "name": "CJ",
+      "balance": 88,
+      "createdAt": "2026-01-13T03:28:36.642Z"
+    }
+  ],
+  "markets": [
+    {
+      "id": "1",
+      "title": "Will eat a whole package of turkey straight from the box",
+      "description": "The subject must consume an entire package of sliced turkey (minimum 8oz) directly from the container, without plates or utensils, in one sitting.",
+      "createdBy": "system",
+      "createdAt": "2026-01-13T03:25:20.927Z",
+      "endsAt": "2026-02-12T03:25:20.927Z",
+      "resolved": false,
+      "outcome": null,
+      "yesPool": 62,
+      "noPool": 50
+    }
+  ],
+  "bets": [
+    {
+      "id": "95b0a541-fa89-4980-9672-99b6d0614a5f",
+      "oddsAtBet": 0.504950495049505,
+      "oddsDirection": "yes",
+      "userId": "de6b3932-b843-4d3e-8edc-a35370e9c959",
+      "marketId": "1",
+      "amount": 1,
+      "position": "yes",
+      "createdAt": "2026-01-13T03:28:44.640Z"
+    },
+    {
+      "id": "311a897f-e9eb-47a4-92a8-47d462e04ca5",
+      "oddsAtBet": 0.5535714285714286,
+      "oddsDirection": "yes",
+      "userId": "de6b3932-b843-4d3e-8edc-a35370e9c959",
+      "marketId": "1",
+      "amount": 11,
+      "position": "yes",
+      "createdAt": "2026-01-13T03:28:50.693Z"
+    }
+  ]
+}
