@@ -27,6 +27,12 @@ function formatDate(date: string): string {
   });
 }
 
+function hasMarketEnded(endsAt: string): boolean {
+  const end = new Date(endsAt);
+  const now = new Date();
+  return now.getTime() >= end.getTime();
+}
+
 interface BetWithUser {
   id: string;
   userName: string;
@@ -401,48 +407,65 @@ export default function Home() {
 
                 {!market.resolved && (
                   <>
-                    <div className="bet-section">
-                      <input
-                        type="number"
-                        className="bet-input"
-                        placeholder="$"
-                        min="1"
-                        max={user.balance}
-                        value={betAmounts[market.id] || ''}
-                        onChange={(e) => setBetAmounts({ ...betAmounts, [market.id]: e.target.value })}
-                      />
-                      <button
-                        className="btn btn-yes btn-sm"
-                        onClick={() => handleBet(market.id, 'yes')}
-                        disabled={loading || !betAmounts[market.id]}
-                      >
-                        Bet Yes
-                      </button>
-                      <button
-                        className="btn btn-no btn-sm"
-                        onClick={() => handleBet(market.id, 'no')}
-                        disabled={loading || !betAmounts[market.id]}
-                      >
-                        Bet No
-                      </button>
-                    </div>
+                    {!hasMarketEnded(market.endsAt) && (
+                      <>
+                        <div className="bet-section">
+                          <input
+                            type="number"
+                            className="bet-input"
+                            placeholder="$"
+                            min="1"
+                            max={user.balance}
+                            value={betAmounts[market.id] || ''}
+                            onChange={(e) => setBetAmounts({ ...betAmounts, [market.id]: e.target.value })}
+                          />
+                          <button
+                            className="btn btn-yes btn-sm"
+                            onClick={() => handleBet(market.id, 'yes')}
+                            disabled={loading || !betAmounts[market.id]}
+                          >
+                            Bet Yes
+                          </button>
+                          <button
+                            className="btn btn-no btn-sm"
+                            onClick={() => handleBet(market.id, 'no')}
+                            disabled={loading || !betAmounts[market.id]}
+                          >
+                            Bet No
+                          </button>
+                        </div>
 
-                    <div className="resolve-section">
-                      <button
-                        className="btn btn-resolve btn-yes"
-                        onClick={() => setResolveModal({ marketId: market.id, outcome: true })}
-                        disabled={loading}
-                      >
-                        Resolve YES
-                      </button>
-                      <button
-                        className="btn btn-resolve btn-no"
-                        onClick={() => setResolveModal({ marketId: market.id, outcome: false })}
-                        disabled={loading}
-                      >
-                        Resolve NO
-                      </button>
-                    </div>
+                        {betAmounts[market.id] && parseFloat(betAmounts[market.id]) > 0 && (
+                          <div className="potential-payout">
+                            <span className="payout-yes">
+                              Yes wins: <strong>${((parseFloat(betAmounts[market.id]) / (market.yesPool + parseFloat(betAmounts[market.id]))) * (totalVolume + parseFloat(betAmounts[market.id]))).toFixed(2)}</strong>
+                            </span>
+                            <span className="payout-no">
+                              No wins: <strong>${((parseFloat(betAmounts[market.id]) / (market.noPool + parseFloat(betAmounts[market.id]))) * (totalVolume + parseFloat(betAmounts[market.id]))).toFixed(2)}</strong>
+                            </span>
+                          </div>
+                        )}
+                      </>
+                    )}
+
+                    {hasMarketEnded(market.endsAt) && (
+                      <div className="resolve-section">
+                        <button
+                          className="btn btn-resolve btn-yes"
+                          onClick={() => setResolveModal({ marketId: market.id, outcome: true })}
+                          disabled={loading}
+                        >
+                          Resolve YES
+                        </button>
+                        <button
+                          className="btn btn-resolve btn-no"
+                          onClick={() => setResolveModal({ marketId: market.id, outcome: false })}
+                          disabled={loading}
+                        >
+                          Resolve NO
+                        </button>
+                      </div>
+                    )}
                   </>
                 )}
               </div>

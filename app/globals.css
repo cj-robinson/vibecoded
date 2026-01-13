@@ -441,6 +441,28 @@ input, textarea {
   border-color: var(--text-primary);
 }
 
+.potential-payout {
+  display: flex;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 12px;
+  background: var(--bg-accent);
+  border-radius: var(--radius-sm);
+  font-size: 0.85rem;
+}
+
+.payout-yes {
+  color: var(--green);
+}
+
+.payout-no {
+  color: var(--red);
+}
+
+.potential-payout strong {
+  font-weight: 600;
+}
+
 .resolve-section {
   display: flex;
   gap: 8px;
