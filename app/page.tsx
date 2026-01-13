@@ -44,6 +44,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [expandedMarket, setExpandedMarket] = useState<string | null>(null);
   const [marketBets, setMarketBets] = useState<Record<string, BetWithUser[]>>({});
+  const [resolveModal, setResolveModal] = useState<{ marketId: string; outcome: boolean } | null>(null);
 
   // New market form
   const [newMarket, setNewMarket] = useState({
@@ -198,6 +199,34 @@ export default function Home() {
     setLoading(false);
   };
 
+  const handleResolveMarket = async () => {
+    if (!resolveModal) return;
+
+    setLoading(true);
+    try {
+      const res = await fetch('/api/markets', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'resolve',
+          marketId: resolveModal.marketId,
+          outcome: resolveModal.outcome,
+        }),
+      });
+
+      if (res.ok) {
+        setResolveModal(null);
+        await fetchMarkets();
+      } else {
+        const error = await res.json();
+        alert(error.error || 'Failed to resolve market');
+      }
+    } catch (error) {
+      console.error('Resolve failed:', error);
+    }
+    setLoading(false);
+  };
+
   if (!user) {
     return (
       <div className="login-container">
@@ -332,31 +361,50 @@ export default function Home() {
                 )}
 
                 {!market.resolved && (
-                  <div className="bet-section">
-                    <input
-                      type="number"
-                      className="bet-input"
-                      placeholder="$"
-                      min="1"
-                      max={user.balance}
-                      value={betAmounts[market.id] || ''}
-                      onChange={(e) => setBetAmounts({ ...betAmounts, [market.id]: e.target.value })}
-                    />
-                    <button
-                      className="btn btn-yes btn-sm"
-                      onClick={() => handleBet(market.id, 'yes')}
-                      disabled={loading || !betAmounts[market.id]}
-                    >
-                      Bet Yes
-                    </button>
-                    <button
-                      className="btn btn-no btn-sm"
-                      onClick={() => handleBet(market.id, 'no')}
-                      disabled={loading || !betAmounts[market.id]}
-                    >
-                      Bet No
-                    </button>
-                  </div>
+                  <>
+                    <div className="bet-section">
+                      <input
+                        type="number"
+                        className="bet-input"
+                        placeholder="$"
+                        min="1"
+                        max={user.balance}
+                        value={betAmounts[market.id] || ''}
+                        onChange={(e) => setBetAmounts({ ...betAmounts, [market.id]: e.target.value })}
+                      />
+                      <button
+                        className="btn btn-yes btn-sm"
+                        onClick={() => handleBet(market.id, 'yes')}
+                        disabled={loading || !betAmounts[market.id]}
+                      >
+                        Bet Yes
+                      </button>
+                      <button
+                        className="btn btn-no btn-sm"
+                        onClick={() => handleBet(market.id, 'no')}
+                        disabled={loading || !betAmounts[market.id]}
+                      >
+                        Bet No
+                      </button>
+                    </div>
+
+                    <div className="resolve-section">
+                      <button
+                        className="btn btn-resolve btn-yes"
+                        onClick={() => setResolveModal({ marketId: market.id, outcome: true })}
+                        disabled={loading}
+                      >
+                        Resolve YES
+                      </button>
+                      <button
+                        className="btn btn-resolve btn-no"
+                        onClick={() => setResolveModal({ marketId: market.id, outcome: false })}
+                        disabled={loading}
+                      >
+                        Resolve NO
+                      </button>
+                    </div>
+                  </>
                 )}
               </div>
             );
@@ -410,6 +458,39 @@ export default function Home() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {resolveModal && (
+        <div className="modal-overlay" onClick={() => setResolveModal(null)}>
+          <div className="modal resolve-modal" onClick={(e) => e.stopPropagation()}>
+            <h2 className="modal-title">Resolve Market</h2>
+            <p style={{ marginBottom: '24px', color: 'var(--text-secondary)' }}>
+              You're about to resolve this market as <strong>{resolveModal.outcome ? 'YES' : 'NO'}</strong>.
+              This will distribute winnings to all winning bettors and cannot be undone.
+            </p>
+            <p style={{ marginBottom: '24px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
+              Make sure you're ready to end this market permanently!
+            </p>
+            <div className="form-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setResolveModal(null)}
+                disabled={loading}
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                className="btn btn-primary"
+                onClick={handleResolveMarket}
+                disabled={loading}
+              >
+                {loading ? 'Resolving...' : 'Confirm & Resolve'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -347,6 +347,32 @@ input, textarea {
   border-color: var(--text-primary);
 }
 
+.resolve-section {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.btn-resolve {
+  flex: 1;
+  font-size: 0.85rem;
+  padding: 10px 16px;
+  opacity: 0.9;
+}
+
+.btn-resolve:hover {
+  opacity: 1;
+}
+
+.resolve-modal {
+  max-width: 450px;
+}
+
+.resolve-modal strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
 .bets-toggle {
   width: 100%;
   background: none;
