@@ -27,6 +27,14 @@ function formatDate(date: string): string {
   });
 }
 
+interface BetWithUser {
+  id: string;
+  userName: string;
+  amount: number;
+  position: 'yes' | 'no';
+  createdAt: string;
+}
+
 export default function Home() {
   const [user, setUser] = useState<User | null>(null);
   const [username, setUsername] = useState('');
@@ -34,6 +42,8 @@ export default function Home() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [betAmounts, setBetAmounts] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(false);
+  const [expandedMarket, setExpandedMarket] = useState<string | null>(null);
+  const [marketBets, setMarketBets] = useState<Record<string, BetWithUser[]>>({});
 
   // New market form
   const [newMarket, setNewMarket] = useState({
@@ -126,6 +136,27 @@ export default function Home() {
     setLoading(false);
   };
 
+  const fetchMarketBets = async (marketId: string) => {
+    try {
+      const res = await fetch(`/api/markets?bets=${marketId}`);
+      const bets = await res.json();
+      setMarketBets({ ...marketBets, [marketId]: bets });
+    } catch (error) {
+      console.error('Failed to fetch bets:', error);
+    }
+  };
+
+  const toggleBetsDropdown = (marketId: string) => {
+    if (expandedMarket === marketId) {
+      setExpandedMarket(null);
+    } else {
+      setExpandedMarket(marketId);
+      if (!marketBets[marketId]) {
+        fetchMarketBets(marketId);
+      }
+    }
+  };
+
   const handleBet = async (marketId: string, position: 'yes' | 'no') => {
     if (!user) return;
 
@@ -148,7 +179,15 @@ export default function Home() {
 
       if (res.ok) {
         setBetAmounts({ ...betAmounts, [marketId]: '' });
+        // Clear cached bets for this market
+        if (marketBets[marketId]) {
+          setMarketBets({ ...marketBets, [marketId]: [] });
+        }
         await Promise.all([fetchMarkets(), refreshUser()]);
+        // Refetch bets if dropdown is open
+        if (expandedMarket === marketId) {
+          fetchMarketBets(marketId);
+        }
       } else {
         const error = await res.json();
         alert(error.error || 'Bet failed');
@@ -262,6 +301,35 @@ export default function Home() {
                     {formatDate(market.createdAt)} — {formatTimeLeft(market.endsAt)}
                   </span>
                 </div>
+
+                <button
+                  className="bets-toggle"
+                  onClick={() => toggleBetsDropdown(market.id)}
+                >
+                  {expandedMarket === market.id ? '▼' : '▶'} View Bets
+                </button>
+
+                {expandedMarket === market.id && (
+                  <div className="bets-dropdown">
+                    {!marketBets[market.id] ? (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>Loading...</p>
+                    ) : marketBets[market.id].length === 0 ? (
+                      <p style={{ textAlign: 'center', color: 'var(--text-muted)' }}>No bets yet</p>
+                    ) : (
+                      <div className="bets-list">
+                        {marketBets[market.id].map((bet) => (
+                          <div key={bet.id} className="bet-item">
+                            <span className="bet-user">{bet.userName}</span>
+                            <span className={`bet-position ${bet.position}`}>
+                              {bet.position === 'yes' ? '👍' : '👎'} {bet.position.toUpperCase()}
+                            </span>
+                            <span className="bet-amount">${bet.amount}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
 
                 {!market.resolved && (
                   <div className="bet-section">

@@ -1,8 +1,25 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getMarkets, getMarket, createMarket, placeBet, resolveMarket } from '@/lib/db';
+import { getMarkets, getMarket, createMarket, placeBet, resolveMarket, getMarketBets, getAllUsers } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const id = request.nextUrl.searchParams.get('id');
+  const betsFor = request.nextUrl.searchParams.get('bets');
+
+  if (betsFor) {
+    const bets = await getMarketBets(betsFor);
+    const users = await getAllUsers();
+
+    // Enhance bets with user names
+    const betsWithUsers = bets.map(bet => {
+      const user = users.find(u => u.id === bet.userId);
+      return {
+        ...bet,
+        userName: user?.name || 'Unknown',
+      };
+    });
+
+    return NextResponse.json(betsWithUsers);
+  }
 
   if (id) {
     const market = await getMarket(id);

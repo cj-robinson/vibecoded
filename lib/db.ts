@@ -214,3 +214,17 @@ export async function getUserBets(userId: string): Promise<Bet[]> {
 
   return bets.filter((b): b is Bet => b !== null);
 }
+
+export async function getMarketBets(marketId: string): Promise<Bet[]> {
+  const betIds = await redis.smembers<string[]>(`bets:market:${marketId}`);
+  if (!betIds || betIds.length === 0) return [];
+
+  const bets = await Promise.all(
+    betIds.map(async (id) => {
+      const data = await redis.get<string>(`bets:${id}`);
+      return data ? JSON.parse(data) : null;
+    })
+  );
+
+  return bets.filter((b): b is Bet => b !== null);
+}
