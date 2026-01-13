@@ -1,0 +1,452 @@
+:root {
+  --bg-primary: #faf8f5;
+  --bg-secondary: #fff;
+  --bg-accent: #f0ebe3;
+  --text-primary: #2d2d2d;
+  --text-secondary: #666;
+  --text-muted: #999;
+  --border: #e5e0d8;
+  --accent-green: #4ade80;
+  --accent-green-dark: #22c55e;
+  --accent-red: #f87171;
+  --accent-red-dark: #ef4444;
+  --accent-blue: #60a5fa;
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -2px rgba(0,0,0,0.07);
+  --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html, body {
+  max-width: 100vw;
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea {
+  font-family: inherit;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header {
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.logo span {
+  color: var(--accent-green-dark);
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.balance {
+  background: var(--bg-accent);
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.balance::before {
+  content: '$';
+}
+
+.username {
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.btn {
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.15s ease;
+}
+
+.btn-primary {
+  background: var(--text-primary);
+  color: white;
+}
+
+.btn-primary:hover {
+  background: #1a1a1a;
+  transform: translateY(-1px);
+}
+
+.btn-yes {
+  background: var(--accent-green);
+  color: #166534;
+}
+
+.btn-yes:hover {
+  background: var(--accent-green-dark);
+  color: white;
+}
+
+.btn-no {
+  background: var(--accent-red);
+  color: #991b1b;
+}
+
+.btn-no:hover {
+  background: var(--accent-red-dark);
+  color: white;
+}
+
+.btn-secondary {
+  background: var(--bg-accent);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.btn-secondary:hover {
+  background: var(--border);
+}
+
+.btn-sm {
+  padding: 6px 12px;
+  font-size: 0.8rem;
+}
+
+.login-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.login-box {
+  background: var(--bg-secondary);
+  padding: 40px;
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+.login-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 8px;
+}
+
+.login-subtitle {
+  color: var(--text-secondary);
+  margin-bottom: 32px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: border-color 0.15s ease;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
+.input-group {
+  margin-bottom: 20px;
+}
+
+.input-label {
+  display: block;
+  text-align: left;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.markets-page {
+  padding: 24px 0;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.page-title {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.market-card {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  padding: 24px;
+  margin-bottom: 16px;
+  transition: box-shadow 0.15s ease;
+}
+
+.market-card:hover {
+  box-shadow: var(--shadow-lg);
+}
+
+.market-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.market-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  flex: 1;
+  padding-right: 16px;
+}
+
+.market-status {
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.market-status.active {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.market-status.resolved {
+  background: var(--bg-accent);
+  color: var(--text-secondary);
+}
+
+.market-description {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.market-odds {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.odds-bar {
+  height: 40px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+}
+
+.odds-yes {
+  background: var(--accent-green);
+  color: #166534;
+}
+
+.odds-no {
+  background: var(--accent-red);
+  color: #991b1b;
+}
+
+.market-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+
+.market-volume {
+  font-weight: 500;
+}
+
+.market-deadline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.bet-section {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.bet-input {
+  width: 100px;
+  padding: 8px 12px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+}
+
+.bet-input:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modal {
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  padding: 32px;
+  width: 100%;
+  max-width: 500px;
+  box-shadow: var(--shadow-lg);
+}
+
+.modal-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.form-input {
+  width: 100%;
+  padding: 12px 14px;
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
+.form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.form-actions .btn {
+  flex: 1;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-muted);
+}
+
+.empty-state h3 {
+  font-size: 1.2rem;
+  margin-bottom: 8px;
+  color: var(--text-secondary);
+}
+
+.timeline {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent-green);
+}
+
+.logout-btn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  padding: 4px 8px;
+}
+
+.logout-btn:hover {
+  color: var(--text-primary);
+}
