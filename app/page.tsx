@@ -116,12 +116,17 @@ export default function Home() {
 
     setLoading(true);
     try {
+      // Convert datetime-local format to ISO string
+      const endsAtISO = new Date(newMarket.endsAt).toISOString();
+
       const res = await fetch('/api/markets', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'create',
-          ...newMarket,
+          title: newMarket.title,
+          description: newMarket.description,
+          endsAt: endsAtISO,
           createdBy: user.name,
         }),
       });
@@ -130,9 +135,13 @@ export default function Home() {
         setShowCreateModal(false);
         setNewMarket({ title: '', description: '', endsAt: '' });
         fetchMarkets();
+      } else {
+        const error = await res.json();
+        alert(error.error || 'Failed to create market');
       }
     } catch (error) {
       console.error('Failed to create market:', error);
+      alert('Failed to create market. Please try again.');
     }
     setLoading(false);
   };
