@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createUser, getUser, deleteUser, readDb } from '@/lib/db';
+import { createUser, getUser, deleteUser, getAllUsers } from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   const name = request.nextUrl.searchParams.get('name');
@@ -12,8 +12,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json(user);
   }
 
-  const db = await readDb();
-  return NextResponse.json(db.users);
+  const users = await getAllUsers();
+  return NextResponse.json(users);
 }
 
 export async function POST(request: NextRequest) {

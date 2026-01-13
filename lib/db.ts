@@ -27,6 +27,20 @@ async function ensureDefaultMarket(): Promise<void> {
   }
 }
 
+export async function getAllUsers(): Promise<User[]> {
+  const userIds = await redis.smembers<string[]>('users:all');
+  if (!userIds || userIds.length === 0) return [];
+
+  const users = await Promise.all(
+    userIds.map(async (id) => {
+      const data = await redis.get<string>(`users:${id}`);
+      return data ? JSON.parse(data) : null;
+    })
+  );
+
+  return users.filter((u): u is User => u !== null);
+}
+
 export async function getUser(name: string): Promise<User | undefined> {
   const userId = await redis.get<string>(`users:byName:${name.toLowerCase()}`);
   if (!userId) return undefined;
